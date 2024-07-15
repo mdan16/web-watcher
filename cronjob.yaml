@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: web-watcher
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: web-watcher
+            image: web-watcher
+            imagePullPolicy: Never
+            env:
+            - name: TARGET_URL
+              value: "https://example.com"
+            - name: TARGET_XPATH
+              value: "/html/body/div/h1"
+            - name: TARGET_EXPECTED_TEXT
+              value: "Example Domain"
+            - name: SLACK_WEBHOOK_URL
+              value: "https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/XXXXXXXXXXXXXXXX"
+            - name: SLACK_NOTIFY_TEXT
+              value: "Expected text was found"
+          restartPolicy: OnFailure
