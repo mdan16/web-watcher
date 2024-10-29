@@ -3,7 +3,7 @@ FROM selenium/standalone-chrome:4.25
 USER root
 RUN sudo apt-get update && apt-get install -y python3 python3-pip
 
-RUN pip3 install --break-system-packages selenium==4.25.0 webdriver_manager
+RUN pip3 install --break-system-packages selenium==4.25.0 webdriver_manager beautifulsoup4
 
 COPY web-watcher.py /web-watcher.py
 

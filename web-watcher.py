@@ -1,5 +1,6 @@
 import os
 import requests
+from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -22,16 +23,19 @@ xpath = os.environ.get('TARGET_XPATH')
 element = WebDriverWait(driver, 10).until(
     EC.presence_of_element_located((By.XPATH, xpath))
 )
-target_text = driver.find_element(by=By.XPATH, value=xpath).text
+target_text = driver.find_element(by=By.XPATH, value=xpath).get_attribute("innerHTML")
 print(f"target_text: {target_text}")
+target_soup = BeautifulSoup(target_text, 'html.parser')
 
 driver.quit()
 
 target_expected_text = os.environ.get('TARGET_EXPECTED_TEXT')
-is_expected = (target_text == target_expected_text)
+expected_soup = BeautifulSoup(target_expected_text, 'html.parser')
+is_expected = (target_soup.prettify().split() == expected_soup.prettify().split())
 
-target_current_text = os.environ.get('TARGET_CURRENT_TEXT') or target_text
-is_changed = (target_text != target_current_text)
+target_current_text = os.environ.get('TARGET_CURRENT_TEXT') or target_current_text
+current_soup = BeautifulSoup(target_current_text, 'html.parser')
+is_changed = (target_soup.prettify().split() != current_soup.prettify().split())
 
 if is_expected or is_changed:
     url = os.environ.get('SLACK_WEBHOOK_URL')
